@@ -1,3 +1,7 @@
+2014-11-16  Michael R. Crusoe  <mcrusoe@msu.edu>
+
+    * doc/roadmap.txt: Explain the roadmap to v2 through v4
+
 2014-11-15  Jacob Fenton  <bocajnotnef@gmail.com>
 
     * tests/test_scripts.py: added screed/read_parsers stream testing
