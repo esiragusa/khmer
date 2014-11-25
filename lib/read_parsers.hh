@@ -123,7 +123,7 @@ public:
     void imprint_next_read(Read &the_read);
 
 private:
-    seqan::SequenceStream _stream;
+    seqan::SeqFileIn _file;
     pthread_mutex_t _imprint_mutex;
 
 };

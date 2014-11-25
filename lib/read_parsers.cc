@@ -19,12 +19,11 @@ namespace read_parsers
 
 SeqAnParser::SeqAnParser( char const * filename ) : IParser( )
 {
-    seqan::open(_stream, filename);
-    if (!seqan::isGood(_stream)) {
+    if (!seqan::open(_file, filename)) {
         std::string message = "Could not open ";
         message = message + filename + " for reading.";
         throw InvalidStreamHandle(message.c_str());
-    } else if (seqan::atEnd(_stream)) {
+    } else if (seqan::atEnd(_file)) {
 	std::string message = "File ";
 	message = message + filename + " does not contain any sequences!";
 	throw InvalidStreamHandle(message.c_str());
@@ -34,25 +33,27 @@ SeqAnParser::SeqAnParser( char const * filename ) : IParser( )
 
 bool SeqAnParser::is_complete()
 {
-    return !seqan::isGood(_stream) || seqan::atEnd(_stream);
+    return seqan::atEnd(_file);
 }
 
 void SeqAnParser::imprint_next_read(Read &the_read)
 {
     the_read.reset();
     pthread_mutex_lock(&_imprint_mutex);
-    int ret = seqan::readRecord(the_read.name, the_read.sequence,
-                                the_read.accuracy, _stream);
-    pthread_mutex_unlock(&_imprint_mutex);
-    if (ret != 0) {
+    if (seqan::atEnd(_file)) {
         throw NoMoreReadsAvailable();
     }
+    else {
+        seqan::readRecord(the_read.name, the_read.sequence,
+                          the_read.accuracy, _file);
+    }
+    pthread_mutex_unlock(&_imprint_mutex);
 }
 
 SeqAnParser::~SeqAnParser()
 {
     pthread_mutex_destroy(&_imprint_mutex);
-    seqan::close(_stream);
+    seqan::close(_file);
 }
 
 IParser * const
